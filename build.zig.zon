@@ -1,0 +1,5 @@
+.{
+    .name = "freetype",
+    .version = "2.13.0",
+    .dependencies = .{},
+}
