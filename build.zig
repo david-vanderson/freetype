@@ -37,6 +37,7 @@ pub fn build(b: *std.Build) void {
 
     lib.install();
     lib.installHeadersDirectory("include/freetype", "freetype");
+    lib.installHeader("include/ft2build.h", "ft2build.h");
 }
 
 const freetype_base_sources = &[_][]const u8{
