@@ -36,7 +36,7 @@ pub fn build(b: *std.Build) void {
     lib.addCSourceFiles(freetype_base_sources, &.{});
 
     lib.install();
-    lib.installHeadersDirectory("include", "freetype");
+    lib.installHeadersDirectory("include/freetype", "freetype");
 }
 
 const freetype_base_sources = &[_][]const u8{
