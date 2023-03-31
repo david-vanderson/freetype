@@ -1,3 +1,7 @@
+This is a fork of [freetype](https://www.freetype.org), packaged for Zig.
+`build.zig` has been added (based off the work of
+https://github.com/hexops/mach-freetype)
+
 FreeType 2.13.0
 ===============
 
