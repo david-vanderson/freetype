@@ -35,7 +35,7 @@ pub fn build(b: *std.Build) void {
     }
     lib.addCSourceFiles(freetype_base_sources, &.{});
 
-    lib.install();
+    b.installArtifact(lib);
     lib.installHeadersDirectory("include/freetype", "freetype");
     lib.installHeader("include/ft2build.h", "ft2build.h");
 }
