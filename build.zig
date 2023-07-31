@@ -13,25 +13,25 @@ pub fn build(b: *std.Build) void {
 
     lib.defineCMacro("FT2_BUILD_LIBRARY", "1");
     lib.linkLibC();
-    lib.addIncludePath(.{ .cwd_relative = "include" });
+    lib.addIncludePath(.{ .path = "include" });
 
     switch (t.os.tag) {
         .windows => {
-            lib.addCSourceFile(.{ .file = .{ .cwd_relative = "builds/windows/ftsystem.c" }, .flags = &.{} });
-            lib.addCSourceFile(.{ .file = .{ .cwd_relative = "builds/windows/ftdebug.c" }, .flags = &.{} });
+            lib.addCSourceFile(.{ .file = .{ .path = "builds/windows/ftsystem.c" }, .flags = &.{} });
+            lib.addCSourceFile(.{ .file = .{ .path = "builds/windows/ftdebug.c" }, .flags = &.{} });
         },
         else => {
-            lib.addCSourceFile(.{ .file = .{ .cwd_relative = "src/base/ftsystem.c" }, .flags = &.{} });
-            lib.addCSourceFile(.{ .file = .{ .cwd_relative = "src/base/ftdebug.c" }, .flags = &.{} });
+            lib.addCSourceFile(.{ .file = .{ .path = "src/base/ftsystem.c" }, .flags = &.{} });
+            lib.addCSourceFile(.{ .file = .{ .path = "src/base/ftdebug.c" }, .flags = &.{} });
         },
     }
 
     if (t.os.tag.isBSD() or t.os.tag == .linux) {
         lib.defineCMacro("HAVE_UNISTD_H", "1");
         lib.defineCMacro("HAVE_FCNTL_H", "1");
-        lib.addCSourceFile(.{ .file = .{ .cwd_relative = "builds/unix/ftsystem.c" }, .flags = &.{} });
+        lib.addCSourceFile(.{ .file = .{ .path = "builds/unix/ftsystem.c" }, .flags = &.{} });
         if (t.os.tag == .macos)
-            lib.addCSourceFile(.{ .file = .{ .cwd_relative = "src/base/ftmac.c" }, .flags = &.{} });
+            lib.addCSourceFile(.{ .file = .{ .path = "src/base/ftmac.c" }, .flags = &.{} });
     }
     lib.addCSourceFiles(freetype_base_sources, &.{});
 
