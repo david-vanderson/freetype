@@ -9,7 +9,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-    const t = lib.target_info.target;
+    const t = target.result;
 
     lib.defineCMacro("FT2_BUILD_LIBRARY", "1");
     lib.linkLibC();
@@ -33,11 +33,11 @@ pub fn build(b: *std.Build) void {
         if (t.os.tag == .macos)
             lib.addCSourceFile(.{ .file = .{ .path = "src/base/ftmac.c" }, .flags = &.{} });
     }
-    lib.addCSourceFiles(freetype_base_sources, &.{});
+    lib.addCSourceFiles(.{ .files = freetype_base_sources });
 
     b.installArtifact(lib);
-    lib.installHeadersDirectory("include/freetype", "freetype");
-    lib.installHeader("include/ft2build.h", "ft2build.h");
+    lib.installHeadersDirectory(b.path("include/freetype"), "freetype", .{});
+    lib.installHeader(b.path("include/ft2build.h"), "ft2build.h");
 }
 
 const freetype_base_sources = &[_][]const u8{
