@@ -11,7 +11,7 @@ pub fn build(b: *std.Build) void {
     });
     const t = target.result;
 
-    lib.defineCMacro("FT2_BUILD_LIBRARY", "1");
+    lib.root_module.addCMacro("FT2_BUILD_LIBRARY", "1");
     lib.linkLibC();
     lib.addIncludePath(b.path("include"));
 
@@ -27,8 +27,8 @@ pub fn build(b: *std.Build) void {
     }
 
     if (t.os.tag.isBSD() or t.os.tag == .linux) {
-        lib.defineCMacro("HAVE_UNISTD_H", "1");
-        lib.defineCMacro("HAVE_FCNTL_H", "1");
+        lib.root_module.addCMacro("HAVE_UNISTD_H", "1");
+        lib.root_module.addCMacro("HAVE_FCNTL_H", "1");
         lib.addCSourceFile(.{ .file = b.path("builds/unix/ftsystem.c"), .flags = &.{} });
         if (t.os.tag == .macos)
             lib.addCSourceFile(.{ .file = b.path("src/base/ftmac.c"), .flags = &.{} });
