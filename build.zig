@@ -4,15 +4,19 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const lib = b.addStaticLibrary(.{
-        .name = "freetype",
+    const libmod = b.createModule(.{
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
+    });
+
+    const lib = b.addLibrary(.{
+        .name = "freetype",
+        .root_module = libmod,
     });
     const t = target.result;
 
-    lib.root_module.addCMacro("FT2_BUILD_LIBRARY", "1");
-    lib.linkLibC();
+    libmod.addCMacro("FT2_BUILD_LIBRARY", "1");
     lib.addIncludePath(b.path("include"));
 
     switch (t.os.tag) {

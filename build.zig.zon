@@ -1,5 +1,6 @@
 .{
-    .name = "freetype",
+    .name = .freetype,
+    .fingerprint = 0xac2059b691d45c6a,
     .version = "2.13.0",
     .dependencies = .{},
     .paths = .{""},
