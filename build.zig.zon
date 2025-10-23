@@ -1,7 +1,7 @@
 .{
     .name = .freetype,
     .fingerprint = 0xac2059b691d45c6a,
-    .version = "2.13.0",
+    .version = "2.14.1",
     .dependencies = .{},
     .paths = .{""},
 }
