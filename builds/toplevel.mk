@@ -3,7 +3,7 @@
 #
 
 
-# Copyright (C) 1996-2023 by
+# Copyright (C) 1996-2025 by
 # David Turner, Robert Wilhelm, and Werner Lemberg.
 #
 # This file is part of the FreeType project, and may only be used, modified,
@@ -170,8 +170,7 @@ endif # test check_platform
 
 check_out_submodule:
 	$(info Checking out submodule in `subprojects/dlg')
-	git --git-dir=$(TOP_DIR) submodule init
-	git --git-dir=$(TOP_DIR) submodule update
+	git -C $(TOP_DIR) submodule update --init
 
 copy_submodule:
 	$(info Copying files from `subprojects/dlg' to `src/dlg' and `include/dlg')
@@ -198,27 +197,22 @@ modules:
 include $(TOP_DIR)/builds/modules.mk
 
 
-# get FreeType version string, using a
-# poor man's `sed' emulation with make's built-in string functions
+# get FreeType version string using built-in string functions
 #
+hash := \#
+
 work := $(strip $(shell $(CAT) \
                   $(subst /,$(SEP),$(TOP_DIR)/include/freetype/freetype.h)))
-work := $(subst |,x,$(work))
-work := $(subst $(space),|,$(work))
-work := $(subst \#define|FREETYPE_MAJOR|,$(space),$(work))
-work := $(word 2,$(work))
-major := $(subst |,$(space),$(work))
-major := $(firstword $(major))
 
-work := $(subst \#define|FREETYPE_MINOR|,$(space),$(work))
-work := $(word 2,$(work))
-minor := $(subst |,$(space),$(work))
-minor := $(firstword $(minor))
+work := $(subst $(hash)define$(space)FREETYPE_MAJOR$(space),MAjOR=,$(work))
+work := $(subst $(hash)define$(space)FREETYPE_MINOR$(space),MInOR=,$(work))
+work := $(subst $(hash)define$(space)FREETYPE_PATCH$(space),PAtCH=,$(work))
 
-work := $(subst \#define|FREETYPE_PATCH|,$(space),$(work))
-work := $(word 2,$(work))
-patch := $(subst |,$(space),$(work))
-patch := $(firstword $(patch))
+major := $(subst MAjOR=,,$(filter MAjOR=%,$(work)))
+minor := $(subst MInOR=,,$(filter MInOR=%,$(work)))
+patch := $(subst PAtCH=,,$(filter PAtCH=%,$(work)))
+
+work :=
 
 # ifneq ($(findstring x0x,x$(patch)x),)
 #   version := $(major).$(minor)
@@ -280,12 +274,16 @@ dist:
 # GNU `config' git repository), relative to the `tmp' directory used during
 # `make dist'.
 #
-CONFIG_GUESS = ~/git/config/config.guess
-CONFIG_SUB   = ~/git/config/config.sub
+# GNU_CONFIG_GIT_URL = git://git.savannah.gnu.org/config.git
+GNU_CONFIG_GIT_URL = https://git.savannah.gnu.org/git/config.git
+GNU_CONFIG_DESTDIR = $(TOP_DIR)/subprojects/gnu-config
+
+CONFIG_GUESS = $(GNU_CONFIG_DESTDIR)/config.guess
+CONFIG_SUB   = $(GNU_CONFIG_DESTDIR)/config.sub
 
 # We also use this repository to access the gnulib script that converts git
 # commit messages to a ChangeLog file.
-CHANGELOG_SCRIPT = ~/git/config/gitlog-to-changelog
+CHANGELOG_SCRIPT = $(GNU_CONFIG_DESTDIR)/gitlog-to-changelog
 
 
 # Don't say `make do-dist'.  Always use `make dist' instead.
@@ -301,6 +299,8 @@ do-dist: distclean refdoc
 	sh autogen.sh
 	rm -rf $(TOP_DIR)/builds/unix/autom4te.cache
 
+	rm -rf $(GNU_CONFIG_DESTDIR)
+	git clone --depth=1 $(GNU_CONFIG_GIT_URL) $(GNU_CONFIG_DESTDIR)
 	cp $(CONFIG_GUESS) $(TOP_DIR)/builds/unix
 	cp $(CONFIG_SUB) $(TOP_DIR)/builds/unix
 
@@ -317,6 +317,7 @@ do-dist: distclean refdoc
 	rm -f $(TOP_DIR)/docs/mkdocs.yml
 
 	@# Remove more stuff related to git.
-	rm -rf (TOP_DIR)/subprojects/dlg
+	rm -rf $(TOP_DIR)/subprojects/dlg
+	rm -rf $(TOP_DIR)/subprojects/gnu-config
 
 # EOF
