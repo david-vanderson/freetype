@@ -24,19 +24,24 @@ pub fn build(b: *std.Build) void {
             libmod.addCSourceFile(.{ .file = b.path("builds/windows/ftsystem.c"), .flags = &.{} });
             libmod.addCSourceFile(.{ .file = b.path("builds/windows/ftdebug.c"), .flags = &.{} });
         },
-        else => {
+        .macos => {
+            libmod.addCMacro("HAVE_UNISTD_H", "1");
+            libmod.addCMacro("HAVE_FCNTL_H", "1");
+            libmod.addCSourceFile(.{ .file = b.path("builds/unix/ftsystem.c"), .flags = &.{} });
+            libmod.addCSourceFile(.{ .file = b.path("src/base/ftdebug.c"), .flags = &.{} });
+            libmod.addCSourceFile(.{ .file = b.path("src/base/ftmac.c"), .flags = &.{} });
+        },
+        else => |os| if (os == .linux or os.isBSD()) {
+            libmod.addCMacro("HAVE_UNISTD_H", "1");
+            libmod.addCMacro("HAVE_FCNTL_H", "1");
+            libmod.addCSourceFile(.{ .file = b.path("builds/unix/ftsystem.c"), .flags = &.{} });
+            libmod.addCSourceFile(.{ .file = b.path("src/base/ftdebug.c"), .flags = &.{} });
+        } else {
             libmod.addCSourceFile(.{ .file = b.path("src/base/ftsystem.c"), .flags = &.{} });
             libmod.addCSourceFile(.{ .file = b.path("src/base/ftdebug.c"), .flags = &.{} });
         },
     }
 
-    if (t.os.tag.isBSD() or t.os.tag == .linux) {
-        libmod.addCMacro("HAVE_UNISTD_H", "1");
-        libmod.addCMacro("HAVE_FCNTL_H", "1");
-        libmod.addCSourceFile(.{ .file = b.path("builds/unix/ftsystem.c"), .flags = &.{} });
-        if (t.os.tag == .macos)
-            libmod.addCSourceFile(.{ .file = b.path("src/base/ftmac.c"), .flags = &.{} });
-    }
     libmod.addCSourceFiles(.{ .files = freetype_base_sources });
 
     b.installArtifact(lib);
