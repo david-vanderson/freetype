@@ -31,12 +31,18 @@ pub fn build(b: *std.Build) void {
             libmod.addCSourceFile(.{ .file = b.path("src/base/ftdebug.c"), .flags = &.{} });
             libmod.addCSourceFile(.{ .file = b.path("src/base/ftmac.c"), .flags = &.{} });
         },
-        else => |os| if (os == .linux or os.isBSD()) {
+        .linux,
+        .freebsd,
+        .netbsd,
+        .openbsd,
+        .dragonfly,
+        => {
             libmod.addCMacro("HAVE_UNISTD_H", "1");
             libmod.addCMacro("HAVE_FCNTL_H", "1");
             libmod.addCSourceFile(.{ .file = b.path("builds/unix/ftsystem.c"), .flags = &.{} });
             libmod.addCSourceFile(.{ .file = b.path("src/base/ftdebug.c"), .flags = &.{} });
-        } else {
+        },
+        else => {
             libmod.addCSourceFile(.{ .file = b.path("src/base/ftsystem.c"), .flags = &.{} });
             libmod.addCSourceFile(.{ .file = b.path("src/base/ftdebug.c"), .flags = &.{} });
         },
